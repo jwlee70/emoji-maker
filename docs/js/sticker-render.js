@@ -2,6 +2,51 @@
 
 export const SIZE = 800; // 내보내는 스티커 크기(px)
 
+// 배경 제거 뒤 남은 흐릿한 얼룩과 작은 조각을 지운다.
+// (그대로 두면 테두리가 얼룩마다 붙어 지저분해진다)
+export function cleanCutout(bitmap) {
+  const w = bitmap.width, h = bitmap.height;
+  const c = new OffscreenCanvas(w, h);
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(bitmap, 0, 0);
+  const img = ctx.getImageData(0, 0, w, h);
+  const px = img.data;
+  const n = w * h;
+
+  // 1) 거의 투명한 부분은 완전히 투명하게
+  for (let i = 0; i < n; i++) if (px[i * 4 + 3] < 64) px[i * 4 + 3] = 0;
+
+  // 2) 붙어 있는 덩어리별로 크기를 재서, 가장 큰 덩어리보다 훨씬 작은 조각은 지운다
+  const label = new Int32Array(n);
+  const sizes = [0];
+  const stack = new Int32Array(n);
+  for (let start = 0; start < n; start++) {
+    if (label[start] || px[start * 4 + 3] === 0) continue;
+    const id = sizes.length;
+    let top = 0, size = 0;
+    stack[top++] = start;
+    label[start] = id;
+    while (top) {
+      const p = stack[--top];
+      size++;
+      const x = p % w;
+      for (let k = 0; k < 4; k++) {
+        const q = k === 0 ? (x > 0 ? p - 1 : -1) : k === 1 ? (x < w - 1 ? p + 1 : -1) : k === 2 ? p - w : p + w;
+        if (q >= 0 && q < n && !label[q] && px[q * 4 + 3] !== 0) {
+          label[q] = id;
+          stack[top++] = q;
+        }
+      }
+    }
+    sizes.push(size);
+  }
+  const keepMin = Math.max(...sizes) * 0.03;
+  for (let i = 0; i < n; i++) if (label[i] && sizes[label[i]] < keepMin) px[i * 4 + 3] = 0;
+
+  ctx.putImageData(img, 0, 0);
+  return c;
+}
+
 // 투명하지 않은 부분만 남기도록 잘라낼 범위를 찾는다.
 function findBounds(bitmap) {
   const scale = Math.min(1, 400 / Math.max(bitmap.width, bitmap.height));
@@ -60,7 +105,7 @@ function outlined(src, width, color) {
 }
 
 /**
- * @param {ImageBitmap} cutout 배경이 지워진 그림
+ * @param {OffscreenCanvas} cutout 배경이 지워지고 cleanCutout 으로 정리된 그림
  * @param {{outline:number, outlineColor:string, text:string, textColor:string}} opts
  *   outline: 테두리 두께(스티커 크기 대비 비율, 0이면 없음)
  * @returns {OffscreenCanvas}

@@ -1,6 +1,6 @@
 // 1단계 기능: 사진 → 스티커
 // 화면 흐름: ① 사진 고르기 → ② 배경 지우는 중 → ③ 꾸미고 보내기
-import { renderSticker } from '../sticker-render.js';
+import { renderSticker, cleanCutout } from '../sticker-render.js';
 import { shareOrSave, save } from '../share.js';
 
 const MAX_INPUT = 1600; // 큰 사진은 이 크기로 줄여서 처리(속도·메모리)
@@ -202,8 +202,9 @@ export function mount(root) {
           bar.style.width = `${65 + Math.round((current / Math.max(1, total)) * 35)}%`;
         }
       });
-      if (state.cutout) state.cutout.close();
-      state.cutout = await createImageBitmap(blob);
+      const bmp = await createImageBitmap(blob);
+      state.cutout = cleanCutout(bmp);
+      bmp.close();
       bar.style.width = '100%';
       redraw();
       show('edit');
