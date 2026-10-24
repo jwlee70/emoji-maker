@@ -1,0 +1,17 @@
+{
+  "name": "나만의 스티커",
+  "short_name": "내 스티커",
+  "description": "사진으로 나만의 스티커를 만들어 카톡·인스타·문자로 보내요",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff6f8",
+  "theme_color": "#ff7a9c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

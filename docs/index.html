@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>나만의 스티커</title>
+  <meta name="theme-color" content="#ff7a9c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="backBtn" class="back" hidden aria-label="뒤로">‹ 처음으로</button>
+    <h1 id="title">나만의 스티커</h1>
+  </header>
+
+  <main id="app">
+    <!-- 홈: 메뉴 카드는 js/app.js 의 FEATURES 목록으로 그려진다 -->
+    <section data-screen="home" class="screen">
+      <p class="lead">무엇을 만들까요?</p>
+      <div id="menu" class="menu"></div>
+      <p class="footnote">배경 지우기: <a href="https://github.com/imgly/background-removal-js">IMG.LY background-removal</a> (AGPL-3.0) ·
+        <a href="https://github.com/jwlee70/emoji-maker">이 앱의 소스코드</a></p>
+    </section>
+  </main>
+
+  <noscript>이 앱은 자바스크립트가 필요해요.</noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

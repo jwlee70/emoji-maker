@@ -1,0 +1,18 @@
+{
+  "name": "emoji-maker",
+  "version": "0.1.0",
+  "description": "나만의 스티커 만들기 (PWA)",
+  "scripts": {
+    "build:lib": "esbuild scripts/bgr-entry.mjs --bundle --format=esm --minify --outfile=docs/vendor/bgr-lib.mjs --legal-comments=eof",
+    "fetch:model": "python scripts/fetch-model.py",
+    "icons": "python scripts/make-icons.py",
+    "serve": "python -m http.server 8765 --directory docs"
+  },
+  "license": "AGPL-3.0-only",
+  "devDependencies": {
+    "@imgly/background-removal": "1.7.0",
+    "esbuild": "^0.28.2",
+    "onnxruntime-web": "1.21.0"
+  },
+  "private": true
+}
