@@ -1,12 +1,12 @@
 // 오프라인 지원용 서비스 워커.
 // - 앱 화면 파일: 인터넷이 되면 새로 받고(업데이트 반영), 안 되면 보관본을 쓴다.
 // - AI 모델 파일(vendor/bgr): 바뀌지 않는 파일이라 한 번 받으면 보관본만 쓴다.
-const SHELL = 'shell-v2';
+const SHELL = 'shell-v3';
 const MODEL = 'model-v1';
 const SHELL_FILES = [
   './', 'index.html', 'style.css', 'manifest.webmanifest',
-  'js/app.js', 'js/share.js', 'js/sticker-render.js', 'js/stylize.js', 'js/cutout-worker.js',
-  'js/features/photo-sticker.js', 'vendor/bgr-lib.mjs',
+  'js/app.js', 'js/share.js', 'js/sticker-render.js', 'js/stylize.js', 'js/cutout-worker.js', 'js/editor.js',
+  'js/features/photo-sticker.js', 'js/features/character.js', 'vendor/bgr-lib.mjs', 'vendor/dicebear.mjs',
   'icons/icon-192.png', 'icons/icon-512.png',
 ];
 

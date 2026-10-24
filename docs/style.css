@@ -114,6 +114,21 @@ main { padding: 0 16px 40px; max-width: 520px; margin: 0 auto; }
 }
 .style-btn canvas { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #f6eef1; }
 .style-btn[aria-pressed="true"] { border-color: var(--pink); background: #ffe8ee; }
+.opt-sub { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.stamps .chip { font-size: 26px; padding: 0 12px; }
+.preview canvas.dragging-ok { touch-action: none; }
+.style-btn img { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #f6eef1; }
+.pick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pick-grid .style-btn span { font-size: 14px; }
+.char-preview { display: flex; justify-content: center; }
+.char-preview img { width: 62%; aspect-ratio: 1; border-radius: 28px; background: #fff; box-shadow: 0 2px 10px rgba(232,90,128,.15); }
+.expr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.expr-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px 14px;
+  border: 0; border-radius: var(--radius); background: var(--card); color: var(--ink);
+  font-size: 20px; font-weight: 800; box-shadow: 0 2px 10px rgba(232, 90, 128, .12);
+}
+.expr-card img { width: 80%; aspect-ratio: 1; }
 .text-input {
   width: 100%; min-height: 60px; padding: 0 16px; font-size: 22px;
   border: 3px solid var(--line); border-radius: 18px; background: #fff; color: var(--ink);

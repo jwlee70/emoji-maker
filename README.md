@@ -6,11 +6,13 @@
 ## 지금 되는 것 (1단계)
 - 📸 사진으로 스티커: 사진 찍기/갤러리 → 배경 자동 제거 → 테두리(두께·색) → 글자(선택) → 보내기/저장
 - 🎨 그림 스티커: 같은 흐름에서 사진을 만화·수채화·스케치 느낌으로 바꾸기(`docs/js/stylize.js`, 외부 라이브러리 없이 직접 구현)
+- 🧸 캐릭터 꾸미기: 머리 모양·색·피부·소품으로 내 캐릭터를 만들고(폰에 저장) 11가지 표정 스티커로 보내기
+- 꾸미기 도장(❤️✨💧 등)을 붙이고 손가락으로 옮기기 — 모든 메뉴 공통 편집 화면(`docs/js/editor.js`)
 - 홈 화면에 추가 가능, 한 번 쓰고 나면 인터넷 없이도 동작
 
 ## 다음 단계 (아직 안 함)
-글자 이모티콘 · 움직이는 스티커(GIF) · 캐릭터 꾸미기
-→ `docs/js/app.js` 의 `FEATURES` 에 모듈 경로를 넣고 `docs/js/features/` 에 `mount(section)` 을 내보내는 파일을 추가하면 홈 메뉴에 붙습니다.
+글자 이모티콘 · 움직이는 스티커(GIF)
+→ `docs/js/app.js` 의 `FEATURES` 에 모듈 경로를 넣고 `docs/js/features/` 에 `mount(section, options)` 를 내보내는 파일을 추가하면 홈 메뉴에 붙습니다.
 
 ## 폴더 구조
 ```
@@ -21,7 +23,10 @@ docs/                     ← GitHub Pages 로 그대로 올라가는 웹사이�
   js/sticker-render.js    ← 테두리·그림자·글자 그리기
   js/cutout-worker.js     ← 배경 제거(별도 스레드)
   js/share.js             ← 공유/저장
+  js/editor.js            ← 공용 편집 화면(도장·테두리·글자·보내기)
+  js/features/character.js ← 캐릭터 꾸미기
   vendor/bgr-lib.mjs      ← 배경 제거 라이브러리(빌드 결과)
+  vendor/dicebear.mjs     ← 캐릭터 그림 라이브러리(빌드 결과)
   vendor/bgr/             ← AI 모델(isnet_quint8)·onnxruntime wasm (약 54MB)
 scripts/                  ← 라이브러리 빌드·모델 받기·아이콘 생성 스크립트
 ```
@@ -42,4 +47,5 @@ npm run serve
 ## 라이선스
 배경 제거에 쓰는 [IMG.LY background-removal-js](https://github.com/imgly/background-removal-js) 가 AGPL-3.0 이라,
 이 앱 전체도 AGPL-3.0 으로 공개합니다(`LICENSE.md`). 공개 저장소에 소스를 그대로 두면 조건을 지키는 것입니다.
+캐릭터 그림은 [DiceBear](https://www.dicebear.com)(코드 MIT)의 “Big Smile” 그림체(Ashley Seo, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/))이며, 앱 화면에 출처를 적어 두었습니다.
 아이콘은 `scripts/make-icons.py` 로 직접 그렸고, 다른 서비스의 코드나 그림은 쓰지 않았습니다.

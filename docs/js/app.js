@@ -7,7 +7,7 @@ const FEATURES = [
   { id: 'cartoon', emoji: '🎨', title: '그림 스티커', desc: '사진을 만화·수채화·스케치로', module: './features/photo-sticker.js', options: { style: 'cartoon' } },
   { id: 'text', emoji: '💬', title: '글자 이모티콘', desc: '곧 나와요' },
   { id: 'gif', emoji: '🎞️', title: '움직이는 스티커', desc: '곧 나와요' },
-  { id: 'character', emoji: '🧸', title: '캐릭터 꾸미기', desc: '곧 나와요' },
+  { id: 'character', emoji: '🧸', title: '캐릭터 꾸미기', desc: '내 캐릭터로 표정 스티커', module: './features/character.js' },
 ];
 
 const app = document.getElementById('app');
