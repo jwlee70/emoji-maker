@@ -1,9 +1,13 @@
-// 1단계 기능: 사진 → 스티커
+// 사진 → 스티커 (1단계) + 그림 느낌(만화·수채화·스케치) 고르기
+// 홈 메뉴 '만화 그림 스티커'도 같은 화면을 쓰고, 처음 고른 그림 느낌만 다르다.
 // 화면 흐름: ① 사진 고르기 → ② 배경 지우는 중 → ③ 꾸미고 보내기
-import { renderSticker, cleanCutout } from '../sticker-render.js';
+import { renderSticker, cleanCutout, fitCutout } from '../sticker-render.js';
+import { STYLES, stylize } from '../stylize.js';
 import { shareOrSave, save } from '../share.js';
 
 const MAX_INPUT = 1600; // 큰 사진은 이 크기로 줄여서 처리(속도·메모리)
+const MAX_SUBJECT = 720; // 스티커 안에 들어갈 그림의 최대 크기
+const THUMB = 150; // 그림 느낌 미리보기 크기
 
 const OUTLINES = [
   { label: '없음', value: 0 },
@@ -82,11 +86,14 @@ function chips(container, items, initial, onPick, render) {
   });
 }
 
-export function mount(root) {
+export function mount(root, options = {}) {
+  const intro = options.style && options.style !== 'photo'
+    ? '사진을 고르면 그림처럼 바꿔 드려요.'
+    : '사람·반려동물·물건이 크게 나온 사진일수록 잘 돼요.';
   root.innerHTML = `
     <div data-step="pick">
       <p class="lead">사진을 골라 주세요</p>
-      <p class="hint">사람·반려동물·물건이 크게 나온 사진일수록 잘 돼요.</p>
+      <p class="hint">${intro}</p>
       <div class="stack">
         <button class="btn" data-act="camera"><span class="emoji">📷</span>사진 찍기</button>
         <button class="btn secondary" data-act="gallery"><span class="emoji">🖼️</span>갤러리에서 고르기</button>
@@ -107,6 +114,10 @@ export function mount(root) {
 
     <div data-step="edit" hidden>
       <div class="preview"><canvas data-canvas width="800" height="800"></canvas></div>
+      <div class="opt">
+        <div class="opt-label">그림 느낌</div>
+        <div class="styles" data-styles></div>
+      </div>
       <div class="stack">
         <button class="btn" data-act="share"><span class="emoji">💬</span>카톡으로 보내기</button>
       </div>
@@ -132,7 +143,9 @@ export function mount(root) {
   const show = (name) => steps.forEach((s) => { s.hidden = s.dataset.step !== name; window.scrollTo(0, 0); });
 
   const state = {
-    cutout: null,
+    cutout: null, // 배경이 지워진 원본
+    style: options.style || 'photo',
+    styled: new Map(), // 그림 느낌별 결과 보관(다시 계산하지 않도록)
     outline: OUTLINES[2],
     outlineColor: OUTLINE_COLORS[0],
     text: '',
@@ -143,9 +156,14 @@ export function mount(root) {
   const canvas = $('[data-canvas]');
   const ctx = canvas.getContext('2d');
 
+  function styledCutout() {
+    if (!state.styled.has(state.style)) state.styled.set(state.style, stylize(state.cutout, state.style));
+    return state.styled.get(state.style);
+  }
+
   function redraw() {
     if (!state.cutout) return;
-    const img = renderSticker(state.cutout, {
+    const img = renderSticker(styledCutout(), {
       outline: state.outline.value,
       outlineColor: state.outlineColor,
       text: state.text,
@@ -172,6 +190,34 @@ export function mount(root) {
     (b, v) => { b.className = 'chip swatch'; b.setAttribute('aria-label', '글자 색'); b.innerHTML = `<span style="background:${v}"></span>`; });
   $('[data-text]').addEventListener('input', (e) => { state.text = e.target.value; redraw(); });
   $('[data-text]').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
+
+  // 그림 느낌 고르기: 실제 사진으로 만든 작은 미리보기 버튼
+  const styleBox = $('[data-styles]');
+  const styleButtons = STYLES.map((st) => {
+    const b = el(`<button type="button" class="style-btn"><canvas width="${THUMB}" height="${THUMB}"></canvas><span></span></button>`);
+    b.querySelector('span').textContent = st.label;
+    b.setAttribute('aria-pressed', String(st.id === state.style));
+    b.addEventListener('click', async () => {
+      styleButtons.forEach((x) => x.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      state.style = st.id;
+      await new Promise((r) => setTimeout(r, 0));
+      redraw();
+    });
+    styleBox.append(b);
+    return b;
+  });
+
+  function drawStyleThumbs() {
+    const small = fitCutout(state.cutout, THUMB - 12);
+    STYLES.forEach((st, i) => {
+      const c = styleButtons[i].querySelector('canvas');
+      const g = c.getContext('2d');
+      const img = stylize(small, st.id);
+      g.clearRect(0, 0, THUMB, THUMB);
+      g.drawImage(img, (THUMB - img.width) / 2, (THUMB - img.height) / 2);
+    });
+  }
 
   // 사진 고르기
   $('[data-act="camera"]').addEventListener('click', () => $('[data-input="camera"]').click());
@@ -203,10 +249,14 @@ export function mount(root) {
         }
       });
       const bmp = await createImageBitmap(blob);
-      state.cutout = cleanCutout(bmp);
+      state.cutout = fitCutout(cleanCutout(bmp), MAX_SUBJECT);
       bmp.close();
+      state.styled.clear();
+      if (state.style !== 'photo') sub.textContent = '그림으로 바꾸는 중이에요…';
       bar.style.width = '100%';
+      await new Promise((r) => setTimeout(r, 30)); // 글자가 화면에 먼저 보이도록
       redraw();
+      drawStyleThumbs();
       show('edit');
     } catch (err) {
       console.error(err);

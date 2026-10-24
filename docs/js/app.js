@@ -1,9 +1,10 @@
 // 앱 뼈대: 홈 메뉴와 화면 전환(#주소로 이동해서 폰의 '뒤로' 버튼이 동작하게 함).
 // 새 기능을 추가할 때는 FEATURES 에 한 줄 넣고 js/features/ 에 모듈을 만든다.
-// 모듈은 mount(sectionElement) 함수를 내보내면 된다.
+// 모듈은 mount(sectionElement, options) 함수를 내보내면 된다. options 는 아래 항목의 options 값.
 
 const FEATURES = [
   { id: 'photo', emoji: '📸', title: '사진으로 스티커', desc: '사진 배경을 지우고 스티커로', module: './features/photo-sticker.js' },
+  { id: 'cartoon', emoji: '🎨', title: '그림 스티커', desc: '사진을 만화·수채화·스케치로', module: './features/photo-sticker.js', options: { style: 'cartoon' } },
   { id: 'text', emoji: '💬', title: '글자 이모티콘', desc: '곧 나와요' },
   { id: 'gif', emoji: '🎞️', title: '움직이는 스티커', desc: '곧 나와요' },
   { id: 'character', emoji: '🧸', title: '캐릭터 꾸미기', desc: '곧 나와요' },
@@ -48,7 +49,7 @@ async function route() {
     app.append(section);
     mounted.set(id, section);
     const mod = await import(feature.module);
-    mod.mount(section);
+    mod.mount(section, feature.options);
   }
   section.hidden = false;
   window.scrollTo(0, 0);

@@ -104,6 +104,18 @@ function outlined(src, width, color) {
   return c;
 }
 
+// 투명한 여백을 잘라내고 최대 max 픽셀 크기로 줄인다. (그림 필터를 빠르게 돌리기 위함)
+export function fitCutout(src, max) {
+  const b = findBounds(src);
+  if (!b) return src;
+  const s = Math.min(1, max / Math.max(b.w, b.h));
+  const c = new OffscreenCanvas(Math.max(1, Math.round(b.w * s)), Math.max(1, Math.round(b.h * s)));
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(src, b.x, b.y, b.w, b.h, 0, 0, c.width, c.height);
+  return c;
+}
+
 /**
  * @param {OffscreenCanvas} cutout 배경이 지워지고 cleanCutout 으로 정리된 그림
  * @param {{outline:number, outlineColor:string, text:string, textColor:string}} opts
